@@ -539,7 +539,8 @@ async function fetchMondayEvents() {
               "long_text__1",
               "long_text_mm3a6pym",
               "long_text_mm3a6vmt",
-              "long_text_mm3at3et"
+              "long_text_mm3at3et",
+              "long_text_mkkv1mn5"
             ]) {
               id
               text
@@ -677,7 +678,7 @@ function renderEvents(items) {
   }
 
   // Only show operational statuses
-  const OPERATIONAL = ['definite', 'handover', 'scheduled', 'tentative'];
+  const OPERATIONAL = ['definite'];
   items = items.filter(item => OPERATIONAL.includes(statusKey(getColumnValue(item, 'deal_stage'))));
 
   // Sort by start time
@@ -710,13 +711,14 @@ function renderEvents(items) {
     const exclusive = getColumnRawValue(item, 'boolean_mkp7h8b7');
     const setupInfo = getColumnValue(item, 'long_text__1');
     const ablauf = getColumnValue(item, 'long_text_mm3at3et');
+    const calDesc = getColumnValue(item, 'long_text_mkkv1mn5');
 
     const sk = statusKey(status);
     const isExclusive = exclusive === 'true' || exclusive === '"true"';
     const paxNum = parseInt(pax) || 0;
     totalPax += paxNum;
 
-    const noteText = ablauf || setupInfo || '';
+    const noteText = calDesc || ablauf || setupInfo || '';
     const isNext = idx === nextIdx;
 
     return `
