@@ -522,7 +522,7 @@ async function fetchMondayEvents() {
       boards(ids: [${CONFIG.MONDAY_BOARD_ID}]) {
         items_page(limit: 100, query_params: {
           rules: [
-            { column_id: "date__1", compare_value: ["${today}"], operator: any_of }
+            { column_id: "date__1", compare_value: ["${today} 00:00:00", "${today} 23:59:59"], operator: between }
           ]
         }) {
           items {
@@ -574,12 +574,9 @@ async function fetchMondayEvents() {
 async function fetchZenchefReservations() {
   const today = todayISO();
   const url = `${CONFIG.ZENCHEF_HOST}/bookings?` + new URLSearchParams({
-    'filters[0][field]': 'reservation_type',
+    'filters[0][field]': 'day',
     'filters[0][operator]': '=',
-    'filters[0][value]': 'reservation',
-    'filters[1][field]': 'day',
-    'filters[1][operator]': '=',
-    'filters[1][value]': today,
+    'filters[0][value]': today,
     'limit': '200',
     'page': '1',
     'sort[field]': 'time',
@@ -678,6 +675,10 @@ function renderEvents(items) {
     document.getElementById('statPax').textContent = '0';
     return;
   }
+
+  // Only show operational statuses
+  const OPERATIONAL = ['definite', 'handover', 'scheduled', 'tentative'];
+  items = items.filter(item => OPERATIONAL.includes(statusKey(getColumnValue(item, 'deal_stage'))));
 
   // Sort by start time
   const sorted = [...items].sort((a, b) => {
