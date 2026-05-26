@@ -266,15 +266,18 @@
     font-weight: 400;
     color: var(--champagne);
   }
+  .res-experience {
+    font-size: 1.2vh;
+    font-weight: 600;
+    color: var(--aperol);
+    margin-top: 0.2vh;
+    letter-spacing: 0.02em;
+  }
   .res-comment {
     font-size: 1.1vh;
     font-weight: 300;
     color: rgba(255,244,235,0.5);
     margin-top: 0.2vh;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
   }
 
   .res-guests {
@@ -771,11 +774,21 @@ function renderReservations(bookings) {
     const status = b.status || 'confirmed';
     const comment = b.comment || '';
 
+    const offerList = b.booking_offers || b.offers || b.booking_offer_list || [];
+    const offerName = b.booking_offer?.name || b.booking_offer?.title
+                   || b.offer?.name         || b.offer?.title
+                   || b.menu?.name          || b.menu?.title
+                   || b.experience          || b.package_name || '';
+    const experience = offerList.length > 0
+      ? offerList.map(o => o.offer_data?.name_translations?.de || o.offer_data?.name || o.name || o.title || o.label || '').filter(Boolean).join(', ')
+      : offerName;
+
     return `
       <tr>
         <td><div class="res-time">${escHtml(time)}</div></td>
         <td>
           <div class="res-name">${escHtml(name)}</div>
+          ${experience ? `<div class="res-experience">${escHtml(experience)}</div>` : ''}
           ${comment ? `<div class="res-comment">${escHtml(comment)}</div>` : ''}
         </td>
         <td><div class="res-guests">${guests}</div></td>
