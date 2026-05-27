@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orangerie NK — Manager View</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --champagne: #FFF4EB;
+    --sage: #91A995;
+    --midnight: #011613;
+    --aperol: #E95920;
+    --blush: #FFA2BB;
+    --citrone: #FDEA82;
+    --rainforest: #01443F;
+    --font: 'Poppins', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--midnight);
+    color: var(--champagne);
+    font-family: var(--font);
+  }
+
+  body {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    border-bottom: 1px solid rgba(145,169,149,0.25);
+    gap: 24px;
+  }
+
+  .logo { display: flex; flex-direction: column; line-height: 1; }
+  .logo-main { font-size: 18px; font-weight: 600; color: var(--aperol); letter-spacing: 0.04em; text-transform: uppercase; }
+  .logo-sub  { font-size: 9px; font-weight: 300; color: var(--sage); letter-spacing: 0.35em; text-transform: uppercase; margin-top: 2px; }
+
+  /* ── Date nav ── */
+  .date-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav-btn {
+    background: rgba(145,169,149,0.1);
+    border: 1px solid rgba(145,169,149,0.25);
+    border-radius: 6px;
+    color: var(--champagne);
+    cursor: pointer;
+    font-size: 16px;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .nav-btn:hover { background: rgba(145,169,149,0.2); }
+
+  .date-input-wrap {
+    position: relative;
+  }
+  #dateInput {
+    background: rgba(145,169,149,0.08);
+    border: 1px solid rgba(145,169,149,0.3);
+    border-radius: 8px;
+    color: var(--champagne);
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 8px 14px;
+    cursor: pointer;
+    outline: none;
+    color-scheme: dark;
+    min-width: 160px;
+    text-align: center;
+  }
+  #dateInput:focus { border-color: var(--aperol); }
+
+  .today-btn {
+    background: rgba(233,89,32,0.1);
+    border: 1px solid rgba(233,89,32,0.3);
+    border-radius: 6px;
+    color: var(--aperol);
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    transition: background 0.15s;
+  }
+  .today-btn:hover { background: rgba(233,89,32,0.2); }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .clock {
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--champagne);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.05em;
+  }
+  .view-link {
+    background: rgba(145,169,149,0.08);
+    border: 1px solid rgba(145,169,149,0.2);
+    border-radius: 6px;
+    color: var(--sage);
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .view-link:hover { background: rgba(145,169,149,0.15); color: var(--champagne); }
+
+  /* ── Main grid ── */
+  main {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .panel {
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+    min-height: 0;
+  }
+
+  .panel-left { border-right: 1px solid rgba(145,169,149,0.2); }
+
+  .panel-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--aperol);
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(233,89,32,0.25);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel-count {
+    background: rgba(233,89,32,0.12);
+    border: 1px solid rgba(233,89,32,0.25);
+    border-radius: 20px;
+    color: var(--aperol);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 10px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Event cards ── */
+  .event-card {
+    background: rgba(145,169,149,0.07);
+    border: 1px solid rgba(145,169,149,0.15);
+    border-left: 3px solid var(--sage);
+    border-radius: 8px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s, border-color 0.15s;
+    flex-shrink: 0;
+  }
+  .event-card:hover {
+    background: rgba(145,169,149,0.13);
+    transform: translateX(2px);
+    border-color: rgba(233,89,32,0.4);
+  }
+  .event-card.status-definite { border-left-color: #00c875; }
+
+  .event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    gap: 12px;
+  }
+  .event-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+  }
+  .event-badges { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+
+  .badge {
+    font-size: 9px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .badge-status-definite { background: rgba(0,200,117,0.15); color: #00c875; border: 1px solid rgba(0,200,117,0.3); }
+  .badge-exclusive { background: rgba(233,89,32,0.15); color: var(--aperol); border: 1px solid rgba(233,89,32,0.3); }
+  .badge-pax { background: rgba(1,68,63,0.4); color: var(--champagne); border: 1px solid rgba(145,169,149,0.2); }
+
+  .event-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--sage);
+  }
+  .meta-time { color: #ffffff; font-weight: 600; }
+  .meta-location { color: #ffffff; }
+
+  .event-preview {
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 300;
+    color: rgba(255,244,235,0.45);
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .click-hint {
+    margin-top: 8px;
+    font-size: 9px;
+    font-weight: 400;
+    color: rgba(145,169,149,0.5);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── Empty state ── */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    gap: 10px;
+    opacity: 0.4;
+  }
+  .empty-icon { font-size: 28px; }
+  .empty-text { font-size: 13px; font-weight: 300; color: var(--sage); }
+
+  /* ── Error ── */
+  .error-banner {
+    background: rgba(223,47,74,0.1);
+    border: 1px solid rgba(223,47,74,0.3);
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: #df2f4a;
+    display: none;
+  }
+  .error-banner.visible { display: block; }
+
+  /* ── Reservation table ── */
+  .res-table { width: 100%; border-collapse: collapse; }
+  .res-table thead tr { border-bottom: 1px solid rgba(145,169,149,0.2); }
+  .res-table th {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sage);
+    padding: 0 10px 10px 0;
+    text-align: left;
+  }
+  .res-table td {
+    padding: 10px 10px 10px 0;
+    vertical-align: top;
+    border-bottom: 1px solid rgba(145,169,149,0.08);
+  }
+  .res-time { font-size: 16px; font-weight: 600; color: var(--champagne); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .res-name { font-size: 13px; font-weight: 400; color: var(--champagne); }
+  .res-experience { font-size: 11px; font-weight: 600; color: var(--aperol); margin-top: 2px; }
+  .res-comment { font-size: 10px; font-weight: 300; color: rgba(255,244,235,0.5); margin-top: 2px; }
+  .res-guests { font-size: 16px; font-weight: 600; color: var(--champagne); text-align: center; }
+  .res-status { text-align: right; }
+  .status-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; }
+  .dot-confirmed { background: #00c875; }
+  .dot-waiting   { background: var(--citrone); }
+  .dot-arrived   { background: var(--aperol); }
+  .dot-seated    { background: var(--blush); }
+  .dot-over      { background: var(--sage); opacity: 0.5; }
+  .dot-canceled  { background: #df2f4a; }
+  .dot-no_shown  { background: rgba(145,169,149,0.3); }
+  .status-label  { font-size: 10px; font-weight: 400; color: var(--sage); text-transform: capitalize; }
+
+  /* ── Modal ── */
+  #modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(1,22,19,0.85);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  #modal.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal-box {
+    background: #021f1b;
+    border: 1px solid rgba(145,169,149,0.25);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 680px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 32px;
+    position: relative;
+    scrollbar-width: none;
+  }
+  .modal-box::-webkit-scrollbar { display: none; }
+
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: rgba(145,169,149,0.1);
+    border: 1px solid rgba(145,169,149,0.2);
+    border-radius: 6px;
+    color: var(--sage);
+    cursor: pointer;
+    font-size: 16px;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .modal-close:hover { background: rgba(145,169,149,0.2); color: var(--champagne); }
+
+  .modal-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    padding-right: 40px;
+  }
+
+  .modal-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .modal-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 14px 0;
+    border-top: 1px solid rgba(145,169,149,0.15);
+    border-bottom: 1px solid rgba(145,169,149,0.15);
+    margin-bottom: 20px;
+  }
+  .modal-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--champagne);
+  }
+  .modal-meta-item .label {
+    font-size: 10px;
+    color: var(--sage);
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .modal-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .modal-section { display: flex; flex-direction: column; gap: 4px; }
+  .modal-section-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--aperol);
+    opacity: 0.9;
+  }
+  .modal-section-text {
+    font-size: 13px;
+    font-weight: 400;
+    color: #ffffff;
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+
+  /* ── Loading ── */
+  #loading {
+    position: fixed;
+    inset: 0;
+    background: var(--midnight);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    flex-direction: column;
+    gap: 16px;
+    transition: opacity 0.3s;
+  }
+  #loading.hidden { opacity: 0; pointer-events: none; }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 2px solid rgba(145,169,149,0.2);
+    border-top-color: var(--aperol);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 11px; color: var(--sage); font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Lade Daten…</div>
+</div>
+
+<!-- ── Modal ── -->
+<div id="modal">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<header>
+  <div class="logo">
+    <span class="logo-main">Orangerie</span>
+    <span class="logo-sub">Neukölln · Manager</span>
+  </div>
+
+  <div class="date-nav">
+    <button class="nav-btn" id="prevDay">‹</button>
+    <div class="date-input-wrap">
+      <input type="date" id="dateInput">
+    </div>
+    <button class="nav-btn" id="nextDay">›</button>
+    <button class="today-btn" id="todayBtn">Heute</button>
+  </div>
+
+  <div class="header-right">
+    <div class="clock" id="clock">00:00</div>
+    <a class="view-link" href="index.html">TV-View</a>
+  </div>
+</header>
+
+<main>
+  <!-- Events -->
+  <div class="panel panel-left">
+    <div class="panel-title">
+      📅 &nbsp;Events
+      <span class="panel-count" id="eventCount">—</span>
+    </div>
+    <div class="error-banner" id="eventsError"></div>
+    <div id="eventsContainer">
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">Lädt…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reservations -->
+  <div class="panel panel-right">
+    <div class="panel-title">
+      🍽️ &nbsp;Reservierungen
+      <span class="panel-count" id="resCount">—</span>
+    </div>
+    <div class="error-banner" id="resError"></div>
+    <div id="resContainer">
+      <div class="empty-state">
+        <div class="empty-icon">🔄</div>
+        <div class="empty-text">Lädt…</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════
+const CONFIG = {
+  MONDAY_API_KEY: 'YOUR_MONDAY_API_KEY',
+  MONDAY_BOARD_ID: '1721179729',
+  ZENCHEF_TOKEN: 'YOUR_ZENCHEF_TOKEN',
+  ZENCHEF_RESTAURANT_ID: 'YOUR_ZENCHEF_RESTAURANT_ID',
+  ZENCHEF_HOST: 'https://api.zenchef.com/api/v1',
+};
+
+// ═══════════════════════════════════════════════
+// State
+// ═══════════════════════════════════════════════
+let selectedDate = todayISO();
+let currentEvents = [];
+
+// ═══════════════════════════════════════════════
+// Helpers
+// ═══════════════════════════════════════════════
+function todayISO() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function formatDisplayDate(iso) {
+  const [y, m, d] = iso.split('-');
+  const date = new Date(y, m - 1, d);
+  return date.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function addDays(iso, n) {
+  const [y, m, d] = iso.split('-');
+  const date = new Date(y, m - 1, d);
+  date.setDate(date.getDate() + n);
+  return date.toISOString().split('T')[0];
+}
+
+function escHtml(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function getColumnValue(item, colId) {
+  const col = item.column_values.find(c => c.id === colId);
+  return col ? (col.text || '') : '';
+}
+
+function getColumnRawValue(item, colId) {
+  const col = item.column_values.find(c => c.id === colId);
+  return col ? col.value : null;
+}
+
+function formatTime(dateText) {
+  if (!dateText) return '';
+  const match = dateText.match(/(\d{2}:\d{2})/);
+  return match ? match[1] : '';
+}
+
+function statusKey(statusText) {
+  if (!statusText) return '';
+  const t = statusText.toLowerCase();
+  if (t.includes('definite')) return 'definite';
+  if (t.includes('handover')) return 'handover';
+  if (t.includes('scheduled')) return 'scheduled';
+  if (t.includes('tentative')) return 'tentative';
+  return 'other';
+}
+
+function dotClass(status) {
+  const s = (status || '').toLowerCase();
+  if (s === 'confirmed') return 'dot-confirmed';
+  if (['waiting', 'waiting_customer'].includes(s)) return 'dot-waiting';
+  if (s === 'arrived') return 'dot-arrived';
+  if (s === 'seated') return 'dot-seated';
+  if (s === 'over') return 'dot-over';
+  if (['canceled', 'refused'].includes(s)) return 'dot-canceled';
+  if (s === 'no_shown') return 'dot-no_shown';
+  return 'dot-waiting';
+}
+
+function resStatusLabel(status) {
+  const map = {
+    confirmed: 'Bestätigt', waiting: 'Wartend', arrived: 'Angekommen',
+    seated: 'Sitzend', over: 'Fertig', canceled: 'Abgesagt',
+    no_shown: 'No-show', refused: 'Abgelehnt'
+  };
+  return map[(status||'').toLowerCase()] || status;
+}
+
+// ═══════════════════════════════════════════════
+// Clock
+// ═══════════════════════════════════════════════
+function updateClock() {
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ═══════════════════════════════════════════════
+// Monday fetch
+// ═══════════════════════════════════════════════
+async function fetchMondayEvents(date) {
+  const query = `
+    query {
+      boards(ids: [${CONFIG.MONDAY_BOARD_ID}]) {
+        items_page(limit: 100, query_params: {
+          rules: [
+            { column_id: "date__1", compare_value: ["${date} 00:00:00", "${date} 23:59:59"], operator: between }
+          ]
+        }) {
+          items {
+            id
+            name
+            column_values(ids: [
+              "date__1",
+              "dup__of_start__1",
+              "dropdown_mkkvf9ze",
+              "dropdown_mkkc4t6r",
+              "numbers__1",
+              "deal_stage",
+              "boolean_mkp7h8b7",
+              "anlass2__1",
+              "long_text__1",
+              "long_text_mm3a6pym",
+              "long_text_mm3a6vmt",
+              "long_text_mm3at3et",
+              "long_text_mkkv1mn5",
+              "long_text_mm3rssq4",
+              "long_text_mm3f1byg"
+            ]) {
+              id
+              text
+              value
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const res = await fetch('https://api.monday.com/v2', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': CONFIG.MONDAY_API_KEY,
+      'API-Version': '2024-01'
+    },
+    body: JSON.stringify({ query })
+  });
+
+  if (!res.ok) throw new Error(`Monday API ${res.status}`);
+  const data = await res.json();
+  if (data.errors) throw new Error(data.errors[0].message);
+  return data.data.boards[0].items_page.items;
+}
+
+// ═══════════════════════════════════════════════
+// ZenChef fetch
+// ═══════════════════════════════════════════════
+async function fetchZenchefReservations(date) {
+  const url = `${CONFIG.ZENCHEF_HOST}/bookings?` + new URLSearchParams({
+    'filters[0][field]': 'day',
+    'filters[0][operator]': '=',
+    'filters[0][value]': date,
+    'limit': '200',
+    'page': '1',
+    'sort[field]': 'time',
+    'sort[order]': 'asc'
+  });
+
+  const res = await fetch(url, {
+    headers: {
+      'auth-token': CONFIG.ZENCHEF_TOKEN,
+      'restaurantId': CONFIG.ZENCHEF_RESTAURANT_ID,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!res.ok) throw new Error(`ZenChef API ${res.status}`);
+  const data = await res.json();
+  return Array.isArray(data) ? data : (data.data || data.records || data.bookings || []);
+}
+
+// ═══════════════════════════════════════════════
+// Render Events
+// ═══════════════════════════════════════════════
+function renderEvents(items) {
+  const container = document.getElementById('eventsContainer');
+
+  const OPERATIONAL = ['definite'];
+  const filtered = (items || []).filter(item => OPERATIONAL.includes(statusKey(getColumnValue(item, 'deal_stage'))));
+
+  document.getElementById('eventCount').textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🌿</div><div class="empty-text">Keine Events</div></div>`;
+    return;
+  }
+
+  const sorted = [...filtered].sort((a, b) =>
+    getColumnValue(a, 'date__1').localeCompare(getColumnValue(b, 'date__1'))
+  );
+  currentEvents = sorted;
+
+  container.innerHTML = sorted.map((item, idx) => {
+    const name     = item.name || '—';
+    const start    = formatTime(getColumnValue(item, 'date__1'));
+    const end      = formatTime(getColumnValue(item, 'dup__of_start__1'));
+    const location = getColumnValue(item, 'dropdown_mkkvf9ze');
+    const host     = getColumnValue(item, 'dropdown_mkkc4t6r');
+    const pax      = getColumnValue(item, 'numbers__1');
+    const status   = getColumnValue(item, 'deal_stage');
+    const exclusive = getColumnRawValue(item, 'boolean_mkp7h8b7');
+    const ablauf   = getColumnValue(item, 'long_text_mm3at3et');
+    const setup    = getColumnValue(item, 'long_text__1');
+    const calDesc  = getColumnValue(item, 'long_text_mkkv1mn5');
+
+    const sk = statusKey(status);
+    const isExclusive = exclusive === 'true' || exclusive === '"true"';
+    const paxNum = parseInt(pax) || 0;
+    const preview = calDesc || ablauf || setup || '';
+
+    return `
+      <div class="event-card status-${sk}" onclick="openModal(${idx})">
+        <div class="event-header">
+          <div class="event-name">${escHtml(name)}</div>
+          <div class="event-badges">
+            ${paxNum ? `<span class="badge badge-pax">👥 ${paxNum}</span>` : ''}
+            ${isExclusive ? `<span class="badge badge-exclusive">Exklusiv</span>` : ''}
+          </div>
+        </div>
+        <div class="event-meta">
+          ${start ? `<span class="meta-item"><span>🕐</span><span class="meta-time">${start}${end ? ' – ' + end : ''}</span></span>` : ''}
+          ${location ? `<span class="meta-item"><span>📍</span><span class="meta-location">${escHtml(location)}</span></span>` : ''}
+          ${host ? `<span class="meta-item"><span>👤</span>${escHtml(host)}</span>` : ''}
+        </div>
+        ${preview ? `<div class="event-preview">${escHtml(preview)}</div>` : ''}
+        <div class="click-hint">Klicken für Details</div>
+      </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// Render Reservations
+// ═══════════════════════════════════════════════
+function renderReservations(bookings) {
+  const container = document.getElementById('resContainer');
+  const active = (bookings || []).filter(b => !['refused'].includes((b.status||'').toLowerCase()));
+
+  document.getElementById('resCount').textContent = active.length;
+
+  if (active.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🌿</div><div class="empty-text">Keine Reservierungen</div></div>`;
+    return;
+  }
+
+  const rows = active.map(b => {
+    const time    = (b.time || '').slice(0, 5);
+    const name    = [b.firstname, b.lastname].filter(Boolean).join(' ') || '—';
+    const guests  = b.nb_guests || '—';
+    const status  = b.status || 'confirmed';
+    const comment = b.comment || '';
+
+    const offerList = b.booking_offers || b.offers || b.booking_offer_list || [];
+    const offerName = b.booking_offer?.name || b.booking_offer?.title
+                   || b.offer?.name         || b.offer?.title
+                   || b.menu?.name          || b.menu?.title
+                   || b.experience          || b.package_name || '';
+    const experience = offerList.length > 0
+      ? offerList.map(o => o.offer_data?.name_translations?.de || o.offer_data?.name || o.name || o.title || o.label || '').filter(Boolean).join(', ')
+      : offerName;
+
+    return `
+      <tr>
+        <td><div class="res-time">${escHtml(time)}</div></td>
+        <td>
+          <div class="res-name">${escHtml(name)}</div>
+          ${experience ? `<div class="res-experience">${escHtml(experience)}</div>` : ''}
+          ${comment ? `<div class="res-comment">${escHtml(comment)}</div>` : ''}
+        </td>
+        <td><div class="res-guests">${guests}</div></td>
+        <td class="res-status">
+          <span class="status-dot ${dotClass(status)}"></span>
+          <span class="status-label">${resStatusLabel(status)}</span>
+        </td>
+      </tr>`;
+  }).join('');
+
+  container.innerHTML = `
+    <table class="res-table">
+      <thead><tr><th>Zeit</th><th>Name</th><th style="text-align:center">PAX</th><th style="text-align:right">Status</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ═══════════════════════════════════════════════
+// Modal
+// ═══════════════════════════════════════════════
+function openModal(idx) {
+  const item = currentEvents[idx];
+  if (!item) return;
+
+  const name     = item.name || '—';
+  const start    = formatTime(getColumnValue(item, 'date__1'));
+  const end      = formatTime(getColumnValue(item, 'dup__of_start__1'));
+  const location = getColumnValue(item, 'dropdown_mkkvf9ze');
+  const host     = getColumnValue(item, 'dropdown_mkkc4t6r');
+  const pax      = getColumnValue(item, 'numbers__1');
+  const status   = getColumnValue(item, 'deal_stage');
+  const exclusive = getColumnRawValue(item, 'boolean_mkp7h8b7');
+  const anlass   = getColumnValue(item, 'anlass2__1');
+
+  const ablauf     = getColumnValue(item, 'long_text_mm3at3et');
+  const setup      = getColumnValue(item, 'long_text__1');
+  const getraenke  = getColumnValue(item, 'long_text_mm3a6vmt');
+  const speisen    = getColumnValue(item, 'long_text_mm3a6pym');
+  const barService = getColumnValue(item, 'long_text_mm3rssq4');
+  const kueche     = getColumnValue(item, 'long_text_mm3f1byg');
+  const calDesc    = getColumnValue(item, 'long_text_mkkv1mn5');
+
+  const sk = statusKey(status);
+  const isExclusive = exclusive === 'true' || exclusive === '"true"';
+  const paxNum = parseInt(pax) || 0;
+
+  const sections = [
+    { label: 'Ablauf',                  text: ablauf },
+    { label: 'Setup',                   text: setup },
+    { label: 'Getränke',                text: getraenke },
+    { label: 'Speisen',                 text: speisen },
+    { label: 'Infos für Bar & Service', text: barService },
+    { label: 'Infos für Küche',         text: kueche },
+    { label: 'Weitere Infos',           text: calDesc },
+  ].filter(s => s.text && s.text.trim());
+
+  const sectionsHtml = sections.length > 0
+    ? sections.map(s => `
+        <div class="modal-section">
+          <div class="modal-section-label">${escHtml(s.label)}</div>
+          <div class="modal-section-text">${escHtml(s.text)}</div>
+        </div>`).join('')
+    : '<div style="color:var(--sage);font-size:13px;opacity:0.5;">Keine weiteren Infos hinterlegt.</div>';
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-title">${escHtml(name)}</div>
+    <div class="modal-badges">
+      ${paxNum ? `<span class="badge badge-pax">👥 ${paxNum} Personen</span>` : ''}
+      ${isExclusive ? `<span class="badge badge-exclusive">Exklusiv</span>` : ''}
+      ${anlass ? `<span class="badge" style="background:rgba(145,169,149,0.1);color:var(--sage);border:1px solid rgba(145,169,149,0.25);">${escHtml(anlass)}</span>` : ''}
+    </div>
+    <div class="modal-meta">
+      ${start ? `<div class="modal-meta-item"><span class="label">Zeit</span><span>🕐 ${start}${end ? ' – ' + end : ''}</span></div>` : ''}
+      ${location ? `<div class="modal-meta-item"><span class="label">Ort</span><span>📍 ${escHtml(location)}</span></div>` : ''}
+      ${host ? `<div class="modal-meta-item"><span class="label">Host</span><span>👤 ${escHtml(host)}</span></div>` : ''}
+      ${status ? `<div class="modal-meta-item"><span class="label">Status</span><span style="color:#00c875;">${escHtml(status)}</span></div>` : ''}
+    </div>
+    <div class="modal-sections">${sectionsHtml}</div>
+  `;
+
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ═══════════════════════════════════════════════
+// Date navigation
+// ═══════════════════════════════════════════════
+const dateInput = document.getElementById('dateInput');
+dateInput.value = selectedDate;
+
+dateInput.addEventListener('change', () => {
+  selectedDate = dateInput.value;
+  refresh();
+});
+
+document.getElementById('prevDay').addEventListener('click', () => {
+  selectedDate = addDays(selectedDate, -1);
+  dateInput.value = selectedDate;
+  refresh();
+});
+
+document.getElementById('nextDay').addEventListener('click', () => {
+  selectedDate = addDays(selectedDate, 1);
+  dateInput.value = selectedDate;
+  refresh();
+});
+
+document.getElementById('todayBtn').addEventListener('click', () => {
+  selectedDate = todayISO();
+  dateInput.value = selectedDate;
+  refresh();
+});
+
+// ═══════════════════════════════════════════════
+// Refresh
+// ═══════════════════════════════════════════════
+async function refresh() {
+  document.getElementById('eventsError').classList.remove('visible');
+  document.getElementById('resError').classList.remove('visible');
+  document.getElementById('eventsContainer').innerHTML = `<div class="empty-state"><div class="empty-icon">🔄</div><div class="empty-text">Lädt…</div></div>`;
+  document.getElementById('resContainer').innerHTML    = `<div class="empty-state"><div class="empty-icon">🔄</div><div class="empty-text">Lädt…</div></div>`;
+
+  const [eventsResult, resResult] = await Promise.allSettled([
+    fetchMondayEvents(selectedDate),
+    fetchZenchefReservations(selectedDate)
+  ]);
+
+  if (eventsResult.status === 'fulfilled') {
+    renderEvents(eventsResult.value);
+  } else {
+    document.getElementById('eventsError').textContent = `Fehler: ${eventsResult.reason.message}`;
+    document.getElementById('eventsError').classList.add('visible');
+    renderEvents([]);
+  }
+
+  if (resResult.status === 'fulfilled') {
+    renderReservations(resResult.value);
+  } else {
+    document.getElementById('resError').textContent = `Fehler: ${resResult.reason.message}`;
+    document.getElementById('resError').classList.add('visible');
+    renderReservations([]);
+  }
+
+  document.getElementById('loading').classList.add('hidden');
+}
+
+refresh();
+</script>
+</body>
+</html>
