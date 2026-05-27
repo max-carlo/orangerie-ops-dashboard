@@ -240,9 +240,9 @@
 
   .event-preview {
     margin-top: 8px;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 300;
-    color: rgba(255,244,235,0.45);
+    color: rgba(255,244,235,0.65);
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
@@ -251,9 +251,9 @@
 
   .click-hint {
     margin-top: 8px;
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 400;
-    color: rgba(145,169,149,0.5);
+    color: rgba(145,169,149,0.75);
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
@@ -301,9 +301,9 @@
     border-bottom: 1px solid rgba(145,169,149,0.08);
   }
   .res-time { font-size: 16px; font-weight: 600; color: var(--champagne); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .res-name { font-size: 13px; font-weight: 400; color: var(--champagne); }
-  .res-experience { font-size: 11px; font-weight: 600; color: var(--aperol); margin-top: 2px; }
-  .res-comment { font-size: 10px; font-weight: 300; color: rgba(255,244,235,0.5); margin-top: 2px; }
+  .res-name { font-size: 14px; font-weight: 400; color: var(--champagne); }
+  .res-experience { font-size: 12px; font-weight: 600; color: var(--aperol); margin-top: 2px; }
+  .res-comment { font-size: 12px; font-weight: 300; color: rgba(255,244,235,0.5); margin-top: 2px; }
   .res-guests { font-size: 16px; font-weight: 600; color: var(--champagne); text-align: center; }
   .res-status { text-align: right; }
   .status-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; }
@@ -421,7 +421,7 @@
     opacity: 0.9;
   }
   .modal-section-text {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 400;
     color: #ffffff;
     line-height: 1.7;
@@ -553,10 +553,13 @@ function formatDisplayDate(iso) {
 }
 
 function addDays(iso, n) {
-  const [y, m, d] = iso.split('-');
-  const date = new Date(y, m - 1, d);
-  date.setDate(date.getDate() + n);
-  return date.toISOString().split('T')[0];
+  const [y, m, d] = iso.split('-').map(Number);
+  const date = new Date(y, m - 1, d + n);
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, '0'),
+    String(date.getDate()).padStart(2, '0')
+  ].join('-');
 }
 
 function escHtml(str) {
