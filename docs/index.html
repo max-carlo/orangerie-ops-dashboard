@@ -219,7 +219,25 @@
   .meta-location { color: #ffffff; }
 
   .event-notes {
-    margin-top: 0.8vh;
+    margin-top: 1vh;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8vh;
+  }
+  .note-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15vh;
+  }
+  .note-label {
+    font-size: 0.9vh;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--aperol);
+    opacity: 0.8;
+  }
+  .note-text {
     font-size: 1.5vh;
     font-weight: 400;
     color: #ffffff;
@@ -540,7 +558,9 @@ async function fetchMondayEvents() {
               "long_text_mm3a6pym",
               "long_text_mm3a6vmt",
               "long_text_mm3at3et",
-              "long_text_mkkv1mn5"
+              "long_text_mkkv1mn5",
+              "long_text_mm3rssq4",
+              "long_text_mm3f1byg"
             ]) {
               id
               text
@@ -709,16 +729,31 @@ function renderEvents(items) {
     const pax = getColumnValue(item, 'numbers__1');
     const status = getColumnValue(item, 'deal_stage');
     const exclusive = getColumnRawValue(item, 'boolean_mkp7h8b7');
-    const setupInfo = getColumnValue(item, 'long_text__1');
-    const ablauf = getColumnValue(item, 'long_text_mm3at3et');
-    const calDesc = getColumnValue(item, 'long_text_mkkv1mn5');
+    const calDesc    = getColumnValue(item, 'long_text_mkkv1mn5');
+    const ablauf     = getColumnValue(item, 'long_text_mm3at3et');
+    const setupInfo  = getColumnValue(item, 'long_text__1');
+    const getraenke  = getColumnValue(item, 'long_text_mm3a6vmt');
+    const speisen    = getColumnValue(item, 'long_text_mm3a6pym');
+    const barService = getColumnValue(item, 'long_text_mm3rssq4');
+    const kueche     = getColumnValue(item, 'long_text_mm3f1byg');
 
     const sk = statusKey(status);
     const isExclusive = exclusive === 'true' || exclusive === '"true"';
     const paxNum = parseInt(pax) || 0;
     totalPax += paxNum;
 
-    const noteText = calDesc || ablauf || setupInfo || '';
+    const noteSections = [
+      { label: 'Ablauf',                  text: ablauf },
+      { label: 'Setup',                   text: setupInfo },
+      { label: 'Getränke',                text: getraenke },
+      { label: 'Speisen',                 text: speisen },
+      { label: 'Infos für Bar & Service', text: barService },
+      { label: 'Infos für Küche',         text: kueche },
+    ].filter(s => s.text && s.text.trim());
+
+    const noteHtml = noteSections.length > 0
+      ? noteSections.map(s => `<div class="note-block"><div class="note-label">${escHtml(s.label)}</div><div class="note-text">${escHtml(s.text)}</div></div>`).join('')
+      : (calDesc ? `<div class="note-text">${escHtml(calDesc)}</div>` : '');
     const isNext = idx === nextIdx;
 
     return `
@@ -736,7 +771,7 @@ function renderEvents(items) {
           ${location ? `<span class="meta-item"><span class="icon">📍</span><span class="meta-location">${escHtml(location)}</span></span>` : ''}
           ${host ? `<span class="meta-item"><span class="icon">👤</span>${escHtml(host)}</span>` : ''}
         </div>
-        ${noteText ? `<div class="event-notes">${escHtml(noteText)}</div>` : ''}
+        ${noteHtml ? `<div class="event-notes">${noteHtml}</div>` : ''}
       </div>`;
   }).join('');
 
