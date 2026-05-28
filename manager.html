@@ -793,7 +793,7 @@ function renderEvents(items) {
 // ═══════════════════════════════════════════════
 function renderReservations(bookings) {
   const container = document.getElementById('resContainer');
-  const active = (bookings || []).filter(b => !['refused'].includes((b.status||'').toLowerCase()));
+  const active = (bookings || []).filter(b => !['refused', 'canceled', 'no_shown'].includes((b.status||'').toLowerCase()));
 
   document.getElementById('resCount').textContent = active.length;
 

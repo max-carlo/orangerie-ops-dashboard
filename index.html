@@ -787,7 +787,7 @@ function renderReservations(bookings) {
   const container = document.getElementById('resContainer');
 
   // Filter out canceled/no_shown for cleaner display (keep them but style differently)
-  const active = (bookings || []).filter(b => !['refused'].includes((b.status||'').toLowerCase()));
+  const active = (bookings || []).filter(b => !['refused', 'canceled', 'no_shown'].includes((b.status||'').toLowerCase()));
 
   if (!active || active.length === 0) {
     container.innerHTML = `
