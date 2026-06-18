@@ -766,7 +766,7 @@ function renderEvents(items) {
     const sk = statusKey(status);
     const isExclusive = exclusive === 'true' || exclusive === '"true"';
     const paxNum = parseInt(pax) || 0;
-    const preview = calDesc || ablauf || setup || '';
+    const preview = ablauf || setup || '';
 
     return `
       <div class="event-card status-${sk}" onclick="openModal(${idx})">
@@ -877,7 +877,6 @@ function openModal(idx) {
     { label: 'Speisen',                 text: speisen },
     { label: 'Infos für Bar & Service', text: barService },
     { label: 'Infos für Küche',         text: kueche },
-    { label: 'Weitere Infos',           text: calDesc },
   ].filter(s => s.text && s.text.trim());
 
   const sectionsHtml = sections.length > 0

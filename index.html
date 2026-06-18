@@ -753,7 +753,7 @@ function renderEvents(items) {
 
     const noteHtml = noteSections.length > 0
       ? noteSections.map(s => `<div class="note-block"><div class="note-label">${escHtml(s.label)}</div><div class="note-text">${escHtml(s.text)}</div></div>`).join('')
-      : (calDesc ? `<div class="note-text">${escHtml(calDesc)}</div>` : '');
+      : '';
     const isNext = idx === nextIdx;
 
     return `
