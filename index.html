@@ -298,6 +298,22 @@
     margin-top: 0.2vh;
   }
 
+  .res-private-comment {
+    font-size: 1.2vh;
+    font-weight: 400;
+    color: var(--citrone);
+    margin-top: 0.3vh;
+    line-height: 1.4;
+  }
+
+  .res-allergies {
+    font-size: 1.1vh;
+    font-weight: 600;
+    color: var(--aperol);
+    margin-top: 0.3vh;
+    letter-spacing: 0.02em;
+  }
+
   .res-guests {
     font-size: 1.8vh;
     font-weight: 600;
@@ -808,6 +824,8 @@ function renderReservations(bookings) {
     const guests = b.nb_guests || '—';
     const status = b.status || 'confirmed';
     const comment = b.comment || '';
+    const privateComment = b.private_comment || '';
+    const allergies = b.allergies || '';
 
     const offerList = b.booking_offers || b.offers || b.booking_offer_list || [];
     const offerName = b.booking_offer?.name || b.booking_offer?.title
@@ -824,6 +842,8 @@ function renderReservations(bookings) {
         <td>
           <div class="res-name">${escHtml(name)}</div>
           ${experience ? `<div class="res-experience">${escHtml(experience)}</div>` : ''}
+          ${privateComment ? `<div class="res-private-comment">💬 ${escHtml(privateComment)}</div>` : ''}
+          ${allergies ? `<div class="res-allergies">⚠️ ${escHtml(allergies)}</div>` : ''}
           ${comment ? `<div class="res-comment">${escHtml(comment)}</div>` : ''}
         </td>
         <td><div class="res-guests">${guests}</div></td>

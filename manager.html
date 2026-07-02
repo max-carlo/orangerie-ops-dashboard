@@ -322,6 +322,8 @@
   .res-name { font-size: 14px; font-weight: 400; color: var(--champagne); }
   .res-experience { font-size: 12px; font-weight: 600; color: var(--aperol); margin-top: 2px; }
   .res-comment { font-size: 12px; font-weight: 300; color: rgba(255,244,235,0.5); margin-top: 2px; }
+  .res-private-comment { font-size: 12px; font-weight: 400; color: var(--citrone); margin-top: 3px; line-height: 1.4; }
+  .res-allergies { font-size: 12px; font-weight: 600; color: var(--aperol); margin-top: 3px; }
   .res-guests { font-size: 16px; font-weight: 600; color: var(--champagne); text-align: center; }
   .res-status { text-align: right; }
   .status-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; }
@@ -808,6 +810,8 @@ function renderReservations(bookings) {
     const guests  = b.nb_guests || '—';
     const status  = b.status || 'confirmed';
     const comment = b.comment || '';
+    const privateComment = b.private_comment || '';
+    const allergies = b.allergies || '';
 
     const offerList = b.booking_offers || b.offers || b.booking_offer_list || [];
     const offerName = b.booking_offer?.name || b.booking_offer?.title
@@ -824,6 +828,8 @@ function renderReservations(bookings) {
         <td>
           <div class="res-name">${escHtml(name)}</div>
           ${experience ? `<div class="res-experience">${escHtml(experience)}</div>` : ''}
+          ${privateComment ? `<div class="res-private-comment">💬 ${escHtml(privateComment)}</div>` : ''}
+          ${allergies ? `<div class="res-allergies">⚠️ ${escHtml(allergies)}</div>` : ''}
           ${comment ? `<div class="res-comment">${escHtml(comment)}</div>` : ''}
         </td>
         <td><div class="res-guests">${guests}</div></td>
